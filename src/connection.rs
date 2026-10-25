@@ -13,6 +13,7 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum ConnectionMessage {
+    NewClient(mpsc::Sender<ServerMessage>),
     Request(Request),
 }
 
@@ -106,6 +107,22 @@ pub async fn handle_connection(
     // create the MPSC channel to communicate with the connection.
     let (connection_sender, mut connection_receiver) = mpsc::channel::<ServerMessage>(32);
 
+    if let Err(e) = server_sender
+        .send(ConnectionMessage::NewClient(connection_sender.clone()))
+        .await
+    {
+        eprintln!("Error sending request: {}", e);
+        return;
+    }
+
+    let client_id = match connection_receiver.recv().await {
+        Some(ServerMessage::ClientInit(id)) => id,
+        _ => {
+            eprintln!("Error initialising client");
+            return;
+        }
+    };
+
     loop {
         tokio::select! {
             result = stream.read(&mut buffer) => {
@@ -128,6 +145,7 @@ pub async fn handle_connection(
                                 value: resp,
                                 sender: connection_sender.clone(),
                                 binary: buffer[start..index].to_vec(),
+                                client_id,
                                 master_connection,
                             };
 
@@ -153,6 +171,10 @@ pub async fn handle_connection(
 
             Some(response) = connection_receiver.recv() => {
                 let _ = match response {
+                    ServerMessage::ClientInit(_) => {
+                        eprintln!("ClientInit received twice");
+                        return;
+                    },
                     ServerMessage::Data(ServerValue::Resp(v)) => stream.write_all(v.to_string().as_bytes()).await,
                     ServerMessage::Data(ServerValue::None) => Ok(()),
                     ServerMessage::Data(ServerValue::Binary(data)) => stream.write_all(&data).await,

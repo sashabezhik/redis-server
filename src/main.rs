@@ -1,3 +1,4 @@
+mod client;
 mod commands;
 mod connection;
 mod replication;
@@ -81,6 +82,13 @@ async fn main() -> std::io::Result<()> {
 
     let (server_sender, server_receiver) = mpsc::channel::<ConnectionMessage>(32);
 
+    // store the server sender in the server itself.
+    // this allows the server to spawn functions
+    // that send requests back to itself (e.g EXEC).
+    server.self_sender = Some(server_sender.clone());
+
+    // if this server is a replica,
+    // connect to the master and listen.
     if let Some(master_config) = &server.replication.master {
         connection::run_master_listener(
             master_config.host.clone(),
