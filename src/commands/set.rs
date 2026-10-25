@@ -96,6 +96,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: false,
         };
 
@@ -123,6 +124,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: false,
         };
 
@@ -148,6 +150,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: false,
         };
 
@@ -179,6 +182,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: false,
         };
 
@@ -209,6 +213,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: true,
         };
 
@@ -241,6 +246,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: false,
         };
 
@@ -274,6 +280,7 @@ mod tests {
             value: Resp::Null,
             sender: request_channel_tx,
             binary: Vec::new(),
+            client_id: 1,
             master_connection: true,
         };
 

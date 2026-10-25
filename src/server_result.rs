@@ -51,6 +51,7 @@ pub enum ServerValue {
 
 #[derive(Debug, PartialEq)]
 pub enum ServerMessage {
+    ClientInit(u64),
     Data(ServerValue),
     Error(ServerError),
 }

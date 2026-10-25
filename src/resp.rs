@@ -9,12 +9,17 @@ pub enum Resp {
     Integer(i64),
     Null,
     RDBPrefix(usize),
+    SimpleError(String),
     SimpleString(String),
 }
 
 impl Resp {
     pub fn simple_string(s: impl Into<String>) -> Self {
         Self::SimpleString(s.into())
+    }
+
+    pub fn simple_error(s: impl Into<String>) -> Self {
+        Self::SimpleError(s.into())
     }
 
     pub fn bulk_string(s: impl Into<String>) -> Self {
@@ -30,7 +35,7 @@ impl Resp {
     }
 
     pub fn bulk_string_from_vec(strings: &[String]) -> Self {
-        Resp::BulkString(strings.join("\r\n"))
+        Self::BulkString(strings.join("\r\n"))
     }
 }
 
@@ -48,6 +53,7 @@ impl fmt::Display for Resp {
             Self::Integer(data) => write!(f, ":{}\r\n", data),
             Self::Null => write!(f, "$-1\r\n"),
             Self::RDBPrefix(data) => write!(f, "${}\r\n", data),
+            Self::SimpleError(data) => write!(f, "-{}\r\n", data),
             Self::SimpleString(data) => write!(f, "+{}\r\n", data),
         }
     }

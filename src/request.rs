@@ -3,11 +3,12 @@ use crate::server_result::{ServerError, ServerMessage, ServerResult, ServerValue
 
 use tokio::sync::mpsc;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Request {
     pub value: Resp,
     pub sender: mpsc::Sender<ServerMessage>,
     pub binary: Vec<u8>,
+    pub client_id: u64,
     pub master_connection: bool,
 }
 
